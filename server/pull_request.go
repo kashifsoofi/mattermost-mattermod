@@ -29,6 +29,7 @@ func (s *Server) handlePullRequestEvent(ctx context.Context, event *PullRequestE
 		if err := s.handleCheckCLA(ctx, pr); err != nil {
 			mlog.Error("Unable to check CLA", mlog.Err(err))
 		}
+		s.postWelcomeMessage(ctx, pr)
 		s.triggerCircleCiIfNeeded(ctx, pr)
 		s.addHacktoberfestLabel(ctx, pr)
 		s.handleTranslationPR(ctx, pr)

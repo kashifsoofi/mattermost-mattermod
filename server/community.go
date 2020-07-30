@@ -5,6 +5,7 @@ package server
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/mattermost/mattermost-mattermod/model"
@@ -31,4 +32,13 @@ func (s *Server) addHacktoberfestLabel(ctx context.Context, pr *model.PullReques
 		mlog.Error("Error applying Hacktoberfest label", mlog.Err(err), mlog.Int("PR", pr.Number), mlog.String("Repo", pr.RepoName))
 		return
 	}
+}
+
+func (s *Server) postWelcomeMessage(ctx context.Context, pr *model.PullRequest) {
+	// Only post welcome Message for community member
+	if s.IsOrgMember(pr.Username) {
+		return
+	}
+
+	s.sendGitHubComment(ctx, pr.RepoOwner, pr.RepoName, pr.Number, strings.Replace(s.Config.WelcomeMessage, "USERNAME", "@"+pr.Username, 1))
 }
